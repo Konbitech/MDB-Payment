@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MDB Payment</string>
+
+    // Title
+    <string name="title_VMC">VMC</string>
+
+    // Message
+    <string name="message_waiting_initial_s">Waiting initial %s</string>
+</resources>
