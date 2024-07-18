@@ -5,25 +5,12 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/line_horizontal_25"
+        android:id="@+id/line_horizontal_40"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.25" />
+        app:layout_constraintGuide_percent="0.40" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/line_horizontal_70"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.70" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/line_horizontal_95"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.95" />
 
     <com.github.ybq.android.spinkit.SpinKitView
         android:id="@+id/spinKit"
@@ -31,9 +18,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="visible"
+        android:layout_margin="20dp"
+        android:visibility="gone"
         app:SpinKit_Color="@color/green"
-        app:layout_constraintBottom_toBottomOf="@id/line_horizontal_25"
+        app:layout_constraintBottom_toBottomOf="@id/line_horizontal_40"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -45,7 +33,7 @@
         android:layout_gravity="center"
         android:layout_margin="20dp"
         android:src="@drawable/ic_success"
-        app:layout_constraintBottom_toBottomOf="@id/line_horizontal_25"
+        app:layout_constraintBottom_toBottomOf="@id/line_horizontal_40"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -59,8 +47,8 @@
         android:text="@string/message_waiting_initial_s"
         android:textColor="@color/grey"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@id/line_horizontal_70"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/line_horizontal_25" />
+        app:layout_constraintTop_toTopOf="@id/line_horizontal_40" />
 </androidx.constraintlayout.widget.ConstraintLayout>

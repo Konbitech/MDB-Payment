@@ -47,8 +47,8 @@ class MessageDialogFragment(private val type: String, private val message: Strin
     override fun onStart() {
         super.onStart()
 
-        val width = (resources.displayMetrics.widthPixels * 0.5).toInt()
-        val height = (resources.displayMetrics.heightPixels * 0.5).toInt()
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
+        val height = (resources.displayMetrics.heightPixels * 0.3).toInt()
 
         dialog?.window?.setLayout(
             width,
