@@ -6,4 +6,7 @@
 
     // Message
     <string name="message_waiting_initial_s">Waiting initial %s</string>
+    <string name="title_ok">OK</string>
+    <string name="title_cash">Cash</string>
+    <string name="message_amount_s">Amount: %s</string>
 </resources>

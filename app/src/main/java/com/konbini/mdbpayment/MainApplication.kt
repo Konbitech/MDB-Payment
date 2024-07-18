@@ -2,6 +2,7 @@ package com.konbini.mdbpayment
 
 import android.app.Application
 import android.content.pm.PackageManager
+import com.konbini.mdbpayment.utils.Cryptography
 import com.konbini.mdbpayment.utils.LogUtils
 import dagger.hilt.android.HiltAndroidApp
 
@@ -11,6 +12,7 @@ class MainApplication : Application() {
         const val TAG = "MainApplication"
 
         lateinit var instance: MainApplication
+        lateinit var cryptography: Cryptography
         var currentVersion: String = "Version: N/A"
 
         fun shared(): MainApplication {
@@ -20,17 +22,25 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
-        LogUtils.logInfo("Start App")
+
         Thread.setDefaultUncaughtExceptionHandler { _, e ->
             handleUncaughtException(
                 e
             )
         }
+
+        instance = this
+        LogUtils.logInfo("Start App")
+        cryptography = Cryptography("Konbini63")
+        initSetting()
     }
 
     private fun handleUncaughtException(e: Throwable) {
         LogUtils.logCrash(e)
+    }
+
+    private fun initSetting() {
+        AppSettings.getAllSetting()
     }
 
     /**
