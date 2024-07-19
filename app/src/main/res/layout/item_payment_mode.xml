@@ -29,16 +29,14 @@
         android:id="@+id/paymentName"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:autoSizeTextType="uniform"
         android:fontFamily="@font/roboto_bold_italic"
-        android:gravity="center"
+        android:gravity="top|center"
         android:text="@string/title_ok"
+        android:textSize="24sp"
         android:textColor="@color/black"
-        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/line_horizontal_60"
-        tools:ignore="SmallSp" />
+        app:layout_constraintTop_toTopOf="@id/line_horizontal_60" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

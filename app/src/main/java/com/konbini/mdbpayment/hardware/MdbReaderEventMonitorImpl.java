@@ -342,7 +342,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
                     responseData[index++] = (byte)0xFF;
                     responseData[index++] = (byte)0xFF;
 
-                }else if(mProcessor.mReaderInfomation.FeatureLevel == 2 || mProcessor.mReaderInfomation.FeatureLevel == 3){
+                } else if (mProcessor.mReaderInfomation.FeatureLevel == 2 || mProcessor.mReaderInfomation.FeatureLevel == 3) {
                     responseData[index++] = RESP_ID_BEGIN_SESSION;
                     /** Z2-Z3 :Funds Available */
                     responseData[index++] = (byte)0xFF;

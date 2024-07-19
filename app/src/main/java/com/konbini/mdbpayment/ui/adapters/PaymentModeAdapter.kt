@@ -65,7 +65,7 @@ class PaymentModeViewHolder(
                 } else {
                     setIcon(R.drawable.ic_master_visa)
                 }
-                itemBinding.paymentName.text = "VISA/Mastercard"
+                itemBinding.paymentName.text = "VISA\nMastercard"
             }
             PaymentModeType.EZ_LINK.value -> {
                 if (AppSettings.PaymentMode.pathImageEzLink.isNotEmpty()) {

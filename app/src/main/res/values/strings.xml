@@ -9,4 +9,5 @@
     <string name="title_ok">OK</string>
     <string name="title_cash">Cash</string>
     <string name="message_amount_s">Amount: %s</string>
+    <string name="message_please_tap_card">Please tap card</string>
 </resources>
