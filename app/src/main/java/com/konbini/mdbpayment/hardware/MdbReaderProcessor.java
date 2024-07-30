@@ -145,7 +145,9 @@ public class MdbReaderProcessor {
         return mMdbReaderEventMonitor.getStateMachine();
     }
 
-
+    public void setReaderEnable() {
+        mMdbReaderEventMonitor.setReaderEnable();
+    }
 
     /**
      * work thread to do some work after monitored mdb reader event.

@@ -27,7 +27,7 @@ class CommonUtil {
 
         fun formatCurrency(value: Double): String {
             var currency = 0.00
-            if (value > 0) currency = (value * 100.0).roundToInt() / 100.0
+            if (value > 0) currency = value
             return format.format(currency)
         }
 

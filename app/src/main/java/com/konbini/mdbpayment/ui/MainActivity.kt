@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.konbini.mdbpayment.AppContainer
@@ -71,11 +72,11 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                 MSG_MDB_VEND -> {
                     val itemPrice = msg.arg1
                     val itemNumber = msg.arg2
-                    val amount = (itemPrice * itemNumber) / 100.00
+                    val amount = itemPrice * 1.00
 
                     hideIdleMode()
                     showPaymentMode()
-                    setAmountValue(amount = amount)
+                    setAmountValue(number = itemNumber, amount = amount)
 //                    val itemPrice = msg.arg1
 //                    val itemNumber = msg.arg2
 //                    val vend_msg = """
@@ -146,9 +147,18 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                 if (mProcessor!!.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
                     mProcessor!!.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
                 }
+//                else
+//                {
+//                    Toast.makeText(this@MainActivity,"mdbReader is not Enable state. ${mProcessor!!.stateMachine}",Toast.LENGTH_SHORT).show();
+//                }
             }
         }
         AppContainer.GlobalVariable.timerReplyBeginSessionJob.schedule(scheduleReplyBeginSession, 0, 1000)
+
+        lifecycleScope.launch {
+            delay(10000)
+            mProcessor!!.setReaderEnable()
+        }
     }
 
     /**
@@ -234,10 +244,11 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
     // endregion
 
     // region ================Handle UI================
-    private fun setAmountValue(amount: Double) {
+    private fun setAmountValue(number: Int, amount: Double) {
         binding.messageAmount.text = String.format(
-            getString(R.string.message_amount_s),
-            CommonUtil.formatCurrency(value = amount)
+            getString(R.string.message_amount_s_s),
+            CommonUtil.formatCurrency(value = amount),
+            String.format("%03d", number)
         )
     }
 
