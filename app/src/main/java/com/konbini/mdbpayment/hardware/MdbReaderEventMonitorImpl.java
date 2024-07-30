@@ -181,6 +181,20 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         isInitialized = false;
     }
 
+    public void setReaderEnable(){
+        mdbReader.slaveSendAnswer(ACK);
+        mState = StateMachine.Enabled;
+        mPollReply = PollReply.REPLY_ACK;
+
+        mdbReader.setLights(LIGHT_COLOR_GREEN,false,0);
+
+        if(!isInitialized){
+            isInitialized = true;
+
+            mProcessor.execute(MdbReaderProcessor.EV_INITIAL_COMPLETE);
+        }
+    }
+
     /**
      * This event indicates that the cashless device is reset.
      * If this event is received by a cashless device it should terminate any ongoing transaction
@@ -342,7 +356,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
                     responseData[index++] = (byte)0xFF;
                     responseData[index++] = (byte)0xFF;
 
-                }else if(mProcessor.mReaderInfomation.FeatureLevel == 2 || mProcessor.mReaderInfomation.FeatureLevel == 3){
+                } else if (mProcessor.mReaderInfomation.FeatureLevel == 2 || mProcessor.mReaderInfomation.FeatureLevel == 3) {
                     responseData[index++] = RESP_ID_BEGIN_SESSION;
                     /** Z2-Z3 :Funds Available */
                     responseData[index++] = (byte)0xFF;

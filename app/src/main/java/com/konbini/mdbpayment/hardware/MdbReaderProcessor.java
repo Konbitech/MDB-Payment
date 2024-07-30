@@ -98,7 +98,7 @@ public class MdbReaderProcessor {
         Message msg = new Message();
         msg.what = what;
         msg.arg1 = arg1;
-        msg.arg1 = arg2;
+        msg.arg2 = arg2;
         mWorkHandler.sendMessage(msg);
     }
 
@@ -129,7 +129,7 @@ public class MdbReaderProcessor {
         Message msg = new Message();
         msg.what = what;
         msg.arg1 = arg1;
-        msg.arg1 = arg2;
+        msg.arg2 = arg2;
         mMainHandler.sendMessage(msg);
     }
 
@@ -145,7 +145,9 @@ public class MdbReaderProcessor {
         return mMdbReaderEventMonitor.getStateMachine();
     }
 
-
+    public void setReaderEnable() {
+        mMdbReaderEventMonitor.setReaderEnable();
+    }
 
     /**
      * work thread to do some work after monitored mdb reader event.

@@ -6,11 +6,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.view.View
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import com.konbini.mdbpayment.AppContainer
 import com.konbini.mdbpayment.AppSettings
 import com.konbini.mdbpayment.R
 import com.konbini.mdbpayment.data.enum.PaymentModeType
 import com.konbini.mdbpayment.databinding.ActivityMainBinding
+import com.konbini.mdbpayment.hardware.MdbReaderEventMonitorImpl
 import com.konbini.mdbpayment.hardware.MdbReaderProcessor
 import com.konbini.mdbpayment.ui.adapters.PaymentModeAdapter
 import com.konbini.mdbpayment.ui.dialog.MessageDialogFragment
@@ -18,7 +22,10 @@ import com.konbini.mdbpayment.utils.CommonUtil
 import com.konbini.mdbpayment.utils.LogUtils
 import com.konbini.mdbpayment.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.ArrayList
+import java.util.TimerTask
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -55,12 +62,21 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                             dialog.dismiss()
                         }
                     }
+                    // VMC Begin
+                    if (mProcessor!!.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
+                        mProcessor!!.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
+                    }
                 }
+
                 MSG_MDB_BEGIN_SESSION -> {}
                 MSG_MDB_VEND -> {
+                    val itemPrice = msg.arg1
+                    val itemNumber = msg.arg2
+                    val amount = itemPrice * 1.00
+
                     hideIdleMode()
                     showPaymentMode()
-                    setAmountValue(amount = 5.toDouble())
+                    setAmountValue(number = itemNumber, amount = amount)
 //                    val itemPrice = msg.arg1
 //                    val itemNumber = msg.arg2
 //                    val vend_msg = """
@@ -93,6 +109,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 //                    val alertDialog = builder.create()
 //                    alertDialog.show()
                 }
+
                 MSG_MDB_END_SESSION -> {}
                 else -> {}
             }
@@ -120,7 +137,28 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
             messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
         }
 
+        showIdleMode()
+        hidePaymentMode()
         setupRecyclerView()
+
+        val scheduleReplyBeginSession = object : TimerTask() {
+            override fun run() {
+                // VMC Begin
+                if (mProcessor!!.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
+                    mProcessor!!.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
+                }
+//                else
+//                {
+//                    Toast.makeText(this@MainActivity,"mdbReader is not Enable state. ${mProcessor!!.stateMachine}",Toast.LENGTH_SHORT).show();
+//                }
+            }
+        }
+        AppContainer.GlobalVariable.timerReplyBeginSessionJob.schedule(scheduleReplyBeginSession, 0, 1000)
+
+        lifecycleScope.launch {
+            delay(10000)
+            mProcessor!!.setReaderEnable()
+        }
     }
 
     /**
@@ -167,7 +205,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         val spanRow = coefficient.roundToInt()
         val spanCount =
             if (spanRow.toDouble().pow(2) > listPaymentType.size) spanRow else spanRow + 1
-        val height = ((resources.displayMetrics.heightPixels * 0.2) / spanRow) - 5
+        val height = ((resources.displayMetrics.heightPixels - (resources.displayMetrics.heightPixels * 0.20)) / spanRow) - 5
 
         paymentModeAdapter = PaymentModeAdapter(this, height.toInt())
         val manager =
@@ -179,17 +217,38 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 
     // region ================Event onClicked of Adapter================
     override fun onClickedPaymentMode(payment: String) {
-        when (payment) {
+        lifecycleScope.launch {
+            messageDialogFragment = MessageDialogFragment(
+                type = Resource.Status.LOADING.name,
+                message = getString(R.string.message_please_tap_card)
+            )
+            messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
 
+            delay(2000)
+            messageDialogFragment.setMessage(message = "Processing...")
+            delay(2000)
+            messageDialogFragment.setIcon(type = Resource.Status.SUCCESS.name)
+            messageDialogFragment.setMessage(message = "Payment Success")
+            delay(1000)
+            messageDialogFragment.setIcon(type = Resource.Status.LOADING.name)
+            messageDialogFragment.setMessage(message = "REPLY VEND APPROVED")
+            // REPLY VEND APPROVED
+            mProcessor!!.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_VEND_APPROVED)
+            delay(1000)
+            messageDialogFragment.dialog!!.dismiss()
+
+            hidePaymentMode()
+            showIdleMode()
         }
     }
     // endregion
 
     // region ================Handle UI================
-    private fun setAmountValue(amount: Double) {
+    private fun setAmountValue(number: Int, amount: Double) {
         binding.messageAmount.text = String.format(
-            getString(R.string.message_amount_s),
-            CommonUtil.formatCurrency(value = amount)
+            getString(R.string.message_amount_s_s),
+            CommonUtil.formatCurrency(value = amount),
+            String.format("%03d", number)
         )
     }
 
