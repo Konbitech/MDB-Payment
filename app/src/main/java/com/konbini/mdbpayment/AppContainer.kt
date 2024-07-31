@@ -6,4 +6,8 @@ object AppContainer {
     object GlobalVariable {
         var timerReplyBeginSessionJob = Timer()
     }
+
+    object CurrentTransaction {
+        var totalPrice = 0.00
+    }
 }

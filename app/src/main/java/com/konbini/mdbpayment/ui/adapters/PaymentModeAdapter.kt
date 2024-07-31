@@ -65,7 +65,7 @@ class PaymentModeViewHolder(
                 } else {
                     setIcon(R.drawable.ic_master_visa)
                 }
-                itemBinding.paymentName.text = "VISA\nMastercard"
+                itemBinding.paymentName.text = MainApplication.instance.resources.getString(R.string.title_visa_mastercard)
             }
             PaymentModeType.EZ_LINK.value -> {
                 if (AppSettings.PaymentMode.pathImageEzLink.isNotEmpty()) {
@@ -76,7 +76,7 @@ class PaymentModeViewHolder(
                 } else {
                     setIcon(R.drawable.ic_ezlink)
                 }
-                itemBinding.paymentName.text = "EzLink"
+                itemBinding.paymentName.text = MainApplication.instance.resources.getString(R.string.title_ez_link)
             }
             PaymentModeType.PAYNOW.value -> {
                 if (AppSettings.PaymentMode.pathImagePayNow.isNotEmpty()) {
@@ -87,7 +87,7 @@ class PaymentModeViewHolder(
                 } else {
                     setIcon(R.drawable.ic_pay_now)
                 }
-                itemBinding.paymentName.text = "PayNow"
+                itemBinding.paymentName.text = MainApplication.instance.resources.getString(R.string.title_pay_now)
             }
             PaymentModeType.ALIPAY.value -> {
                 if (AppSettings.PaymentMode.pathImageAliPay.isNotEmpty()) {
@@ -98,7 +98,7 @@ class PaymentModeViewHolder(
                 } else {
                     setIcon(R.drawable.ic_alipay)
                 }
-                itemBinding.paymentName.text = "AliPay"
+                itemBinding.paymentName.text = MainApplication.instance.resources.getString(R.string.title_ali_pay)
             }
             PaymentModeType.GRABPAY.value -> {
                 if (AppSettings.PaymentMode.pathImageGrabPay.isNotEmpty()) {
@@ -109,7 +109,7 @@ class PaymentModeViewHolder(
                 } else {
                     setIcon(R.drawable.ic_grabpay)
                 }
-                itemBinding.paymentName.text = "GrabPay"
+                itemBinding.paymentName.text = MainApplication.instance.resources.getString(R.string.title_grab_pay)//"GrabPay"
             }
             PaymentModeType.WECHAT.value -> {
                 if (AppSettings.PaymentMode.pathImageWeChat.isNotEmpty()) {
@@ -120,7 +120,7 @@ class PaymentModeViewHolder(
                 } else {
                     setIcon(R.drawable.ic_wechat)
                 }
-                itemBinding.paymentName.text = "WeChat"
+                itemBinding.paymentName.text = MainApplication.instance.resources.getString(R.string.title_we_chat)//"WeChat"
             }
             PaymentModeType.KONBI_WALLET.value -> {
                 if (AppSettings.PaymentMode.pathImageKonbiniWallet.isNotEmpty()) {
@@ -131,18 +131,7 @@ class PaymentModeViewHolder(
                 } else {
                     setIcon(R.drawable.ic_konbini)
                 }
-                itemBinding.paymentName.text = "Wallet"
-            }
-            PaymentModeType.CASH.value -> {
-                if (AppSettings.PaymentMode.pathImageCash.isNotEmpty()) {
-                    val imgFile = File(AppSettings.PaymentMode.pathImageCash)
-                    if (imgFile.exists()) {
-                        setIcon(imgFile)
-                    }
-                } else {
-                    setIcon(R.drawable.ic_money)
-                }
-                itemBinding.paymentName.text = MainApplication.instance.getString(R.string.title_cash)
+                itemBinding.paymentName.text = MainApplication.instance.resources.getString(R.string.title_wallet)//"Wallet"
             }
         }
     }

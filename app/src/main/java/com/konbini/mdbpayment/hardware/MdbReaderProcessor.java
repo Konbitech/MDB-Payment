@@ -8,7 +8,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.konbini.mdbpayment.ui.MainActivity;
+import com.konbini.mdbpayment.ui.mainActivity.MainActivity;
 
 public class MdbReaderProcessor {
     private final static String TAG = "EventProcessor";

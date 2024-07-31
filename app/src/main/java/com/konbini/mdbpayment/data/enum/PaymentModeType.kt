@@ -7,6 +7,5 @@ enum class PaymentModeType(val value: String) {
     ALIPAY("ALIPAY"),
     GRABPAY("GRABPAY"),
     WECHAT("WECHAT"),
-    KONBI_WALLET("KONBI_WALLET"),
-    CASH("CASH")
+    KONBI_WALLET("KONBI_WALLET")
 }

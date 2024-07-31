@@ -30,8 +30,6 @@ task clean(type: Delete) {
 }
 
 ext {
-    def formattedDate = new Date().format('HHmmddMMYYYY')
-
     compileSdkVersion = 31
     buildToolsVersion = "30.0.3"
 

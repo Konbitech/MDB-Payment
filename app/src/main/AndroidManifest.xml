@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.konbini.mdbpayment">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -14,13 +16,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MDBPayment">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.mainActivity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MDBPayment.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="mdbpayment"
+                    android:host="konbitech.com" />
             </intent-filter>
 
             <meta-data

@@ -89,4 +89,33 @@ object AppSettings {
         var Cash = true
         var pathImageCash = ""
     }
+
+    object Fiuu {
+        var PaymentUrl = "https://pay.merchant.razer.com"
+        var APIUrl = "https://api.merchant.razer.com"
+        var MerchantID = "konbini_Dev"
+        var VerifyKey = "163fa3774f82328b566d9e2f752435c5"
+        var PrivateKey = "afc2daf45d590bdf9c4f17e312dcbb45"
+        var ReferenceNo = "18570"
+        var TxnType = "SALS"
+        var TxnChannel = "PAYNOW"
+        var TxnCurrency = "SGD"
+        var CustName = "RMS+Demo"
+        var Custemail = "demo@RMS.com"
+        var CustContact = "55218438"
+        var CustDesc = "testing+by+RMS"
+    }
+
+    object Options {
+        object Payment {
+            var Timeout = 60L
+        }
+    }
+
+    object APIs {
+        // FIUU
+        var PaymentRequestDirectServer = "/RMS/API/Direct/1.4.0/index.php"
+        var ViewQR = "/RMS/PayNow/view_qr.php"
+        var DirectStatusRequery = "/RMS/API/gate-query/index.php"
+    }
 }

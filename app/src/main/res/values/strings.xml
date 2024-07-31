@@ -3,12 +3,25 @@
 
     // Title
     <string name="title_VMC">VMC</string>
+    <string name="title_ok">OK</string>
+    <string name="title_cash">Cash</string>
+    <string name="title_cancel">Cancel</string>
+    <string name="title_visa_mastercard">VISA\nMastercard</string>
+    <string name="title_ez_link">EzLink</string>
+    <string name="title_pay_now">PayNow</string>
+    <string name="title_ali_pay">AliPay</string>
+    <string name="title_grab_pay">GrabPay</string>
+    <string name="title_we_chat">WeChat</string>
+    <string name="title_wallet">Wallet</string>
 
     // Message
     <string name="message_waiting_initial_s">Waiting initial %s</string>
-    <string name="title_ok">OK</string>
-    <string name="title_cash">Cash</string>
     <string name="message_amount_s_s">Amount: %s \n : Selection No.: %s</string>
     <string name="message_amount_s">Amount: %s</string>
     <string name="message_please_tap_card">Please tap card</string>
+    <string name="message_function_is_being_upgraded">Function is being upgraded</string>
+    <string name="message_please_scan_qr">Please scan QR \n in processing time</string>
+    <string name="message_error_payment">%s: %s</string>
+    <string name="message_timeout">Timeout!!!</string>
+    <string name="message_loading">Loading…</string>
 </resources>
