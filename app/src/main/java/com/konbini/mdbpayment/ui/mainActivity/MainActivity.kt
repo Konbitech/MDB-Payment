@@ -1,6 +1,10 @@
 package com.konbini.mdbpayment.ui.mainActivity
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -10,12 +14,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.konbini.mdbpayment.AppContainer
 import com.konbini.mdbpayment.AppSettings
+import com.konbini.mdbpayment.BroadcastKey
 import com.konbini.mdbpayment.BuildConfig
+import com.konbini.mdbpayment.MainApplication
 import com.konbini.mdbpayment.R
 import com.konbini.mdbpayment.data.enum.FiuuAppendixA
 import com.konbini.mdbpayment.data.enum.FiuuAppendixB
@@ -62,6 +69,27 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
     private lateinit var paymentModeAdapter: PaymentModeAdapter
     private lateinit var messageDialogFragment: MessageDialogFragment
 
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                BroadcastKey.FIUU_QR_RESULT -> {
+                    val result: State = Gson().fromJson(intent.getStringExtra(BroadcastKey.FIUU_QR_RESULT).toString(), State::class.java)
+                    if (result.status == Resource.Status.SUCCESS) {
+                        handleFiuuPaymentSuccess()
+                    } else {
+                        showIdleMode()
+                        hidePaymentMode()
+                        messageDialogFragment = MessageDialogFragment(
+                            type = Resource.Status.ERROR.name,
+                            message = result.message
+                        )
+                        messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
+                    }
+                }
+            }
+        }
+    }
+
     private val mHandler: Handler = @SuppressLint("HandlerLeak")
     object : Handler() {
         override fun handleMessage(msg: Message) {
@@ -72,6 +100,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                     // val strInfo = bdl.getString("msg")
                     messageDialogFragment.dialog?.let { dialog ->
                         if (dialog.isShowing) {
+                            MainApplication.appStarted = true
                             dialog.dismiss()
                         }
                     }
@@ -83,9 +112,9 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 
                 MSG_MDB_BEGIN_SESSION -> {}
                 MSG_MDB_VEND -> {
-                    val itemPrice = msg.arg1
+                    val itemPrice = msg.arg1 // Cent
                     val itemNumber = msg.arg2
-                    val amount = itemPrice * 1.00
+                    val amount = (itemPrice / 100.00) * 1.00
                     AppContainer.CurrentTransaction.totalPrice = amount
 
                     hideIdleMode()
@@ -145,7 +174,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         }
 
 
-        if (!this::messageDialogFragment.isInitialized) {
+        if (!this::messageDialogFragment.isInitialized && !MainApplication.appStarted) {
             messageDialogFragment = MessageDialogFragment(
                 type = Resource.Status.LOADING.name,
                 message = String.format(
@@ -159,7 +188,6 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         showIdleMode()
         hidePaymentMode()
         setupRecyclerView()
-        gettingFiuuData()
 
         val scheduleReplyBeginSession = object : TimerTask() {
             override fun run() {
@@ -173,11 +201,13 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                 }
             }
         }
+        AppContainer.GlobalVariable.timerReplyBeginSessionJob = CommonUtil.resetTimer(AppContainer.GlobalVariable.timerReplyBeginSessionJob)
         AppContainer.GlobalVariable.timerReplyBeginSessionJob.schedule(scheduleReplyBeginSession, 0, 1000)
 
         lifecycleScope.launch {
             mProcessor?.let { _mProcessor ->
                 delay(10000)
+                MainApplication.appStarted = true
                 _mProcessor.setReaderEnable()
             }
 
@@ -185,10 +215,32 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 //            if (BuildConfig.DEBUG) {
 //                delay(2000)
 //                messageDialogFragment.dismiss()
+//                AppContainer.CurrentTransaction.totalPrice = 1.10
+//
 //                hideIdleMode()
 //                showPaymentMode()
+//                setAmountValue(number = 1, amount = 1.10)
 //            }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val filterIntent = IntentFilter()
+        filterIntent.addAction(BroadcastKey.FIUU_QR_RESULT)
+        LocalBroadcastManager.getInstance(applicationContext)
+            .registerReceiver(broadcastReceiver, IntentFilter(filterIntent))
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        gettingFiuuData()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(broadcastReceiver)
     }
 
     /**
@@ -344,18 +396,18 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                     val status = uri.getQueryParameter("status")
                     if (status == "00") {
                         val orderId = uri.getQueryParameter("orderid").toString()
-                        handleFiuuPaymentSuccess(orderId)
+                        handleFiuuPaymentSuccess()
                     }
                 }
             }
         }
     }
 
-    private fun handleFiuuPaymentSuccess(orderId: String) {
+    private fun handleFiuuPaymentSuccess() {
         lifecycleScope.launch {
             messageDialogFragment = MessageDialogFragment(
                 type = Resource.Status.SUCCESS.name,
-                message = "Order $orderId Payment Success"
+                message = "Payment Success"
             )
             messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
             delay(1000)
@@ -366,8 +418,8 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
             delay(1000)
             messageDialogFragment.dialog!!.dismiss()
 
-            hidePaymentMode()
             showIdleMode()
+            hidePaymentMode()
         }
     }
 
@@ -380,62 +432,71 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
     }
 
     private fun handleFiuuPayNow() {
-        messageDialogFragment = MessageDialogFragment(
-            type = Resource.Status.LOADING.name,
-            message = getString(R.string.message_loading)
-        )
-        messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
+        if (AppSettings.Fiuu.isAPI) {
+            messageDialogFragment = MessageDialogFragment(
+                type = Resource.Status.LOADING.name,
+                message = getString(R.string.message_loading)
+            )
+            messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
 
-        AppContainer.CurrentTransaction.totalPrice = 1.00
-        val amount = "%.2f".format(AppContainer.CurrentTransaction.totalPrice).toDouble()
-        LogUtils.logInfo("Amount: $amount")
-        lifecycleScope.launch {
-            val payment = viewModel.paymentRequestDirectServer(amount = amount)
-            if (payment.status == Resource.Status.ERROR) {
-                val errorDetail = Gson().fromJson(payment.message, ErrorResponse::class.java)
-                val message = "${errorDetail.errorCode}: ${errorDetail.errorDesc}"
+            AppContainer.CurrentTransaction.totalPrice = 1.00
+            val amount = "%.2f".format(AppContainer.CurrentTransaction.totalPrice).toDouble()
+            LogUtils.logInfo("Amount: $amount")
+            lifecycleScope.launch {
+                val payment = viewModel.paymentRequestDirectServer(amount = amount)
+                if (payment.status == Resource.Status.ERROR) {
+                    val errorDetail = Gson().fromJson(payment.message, ErrorResponse::class.java)
+                    val message = "${errorDetail.errorCode}: ${errorDetail.errorDesc}"
 
-                // Show Error Message
-                messageDialogFragment.setIcon(type = Resource.Status.ERROR.name)
-                messageDialogFragment.setMessage(message = message)
-                return@launch
-            }
-
-            val jsonObject = payment.data as JsonObject
-            if (jsonObject.has("error_code")) {
-                val errorDetail = Gson().fromJson(payment.data.toString(), ErrorResponse::class.java)
-                val message = "${errorDetail.errorCode}: ${errorDetail.errorDesc}"
-
-                // Show Error Message
-                messageDialogFragment.setIcon(type = Resource.Status.ERROR.name)
-                messageDialogFragment.setMessage(message = message)
-                return@launch
-            } else {
-                messageDialogFragment.dialog?.let {
-                    it.dismiss()
+                    // Show Error Message
+                    messageDialogFragment.setIcon(type = Resource.Status.ERROR.name)
+                    messageDialogFragment.setMessage(message = message)
+                    return@launch
                 }
-                // Show QR Code
-                val paymentData = Gson().fromJson(payment.data.toString(), PaymentRequestDirectServerResponse::class.java)
-                paymentData.TxnData?.let { txnData ->
-                    txnData.RequestData?.let { requestData ->
-                        val viewQr = viewModel.viewQr(url = txnData.RequestURL.toString(), requestData = requestData)
-                        if (payment.status == Resource.Status.ERROR) {
 
-                        }
-                        val viewQrData = (viewQr.data as ResponseBody).string()
-                        val links = CommonUtil.extractUrls(viewQrData)
-                        val find = links.find { it.contains("view_qr.php") }
-                        find?.let {
-                            val qrDialogFragment = QRDialogFragment(
-                                url = it,
-                                txnAmount = amount,
-                                txID = requestData.orderid.toString()
-                            )
-                            qrDialogFragment.show(supportFragmentManager, QRDialogFragment.TAG)
+                val jsonObject = payment.data as JsonObject
+                if (jsonObject.has("error_code")) {
+                    val errorDetail = Gson().fromJson(payment.data.toString(), ErrorResponse::class.java)
+                    val message = "${errorDetail.errorCode}: ${errorDetail.errorDesc}"
+
+                    // Show Error Message
+                    messageDialogFragment.setIcon(type = Resource.Status.ERROR.name)
+                    messageDialogFragment.setMessage(message = message)
+                    return@launch
+                } else {
+                    // Show QR Code
+                    val paymentData = Gson().fromJson(payment.data.toString(), PaymentRequestDirectServerResponse::class.java)
+                    paymentData.TxnData?.let { txnData ->
+                        txnData.RequestData?.let { requestData ->
+                            val viewQr = viewModel.viewQr(url = txnData.RequestURL.toString(), requestData = requestData)
+                            if (payment.status == Resource.Status.ERROR) {
+
+                            }
+                            val viewQrData = (viewQr.data as ResponseBody).string()
+                            val links = CommonUtil.extractUrls(viewQrData)
+                            val find = links.find { it.contains("view_qr.php") }
+                            find?.let {
+                                messageDialogFragment.dialog?.let { _dialog ->
+                                    _dialog.dismiss()
+                                }
+
+                                val qrDialogFragment = QRDialogFragment(
+                                    url = it,
+                                    txnAmount = amount,
+                                    txID = requestData.orderid.toString()
+                                )
+                                qrDialogFragment.show(supportFragmentManager, QRDialogFragment.TAG)
+                            }
                         }
                     }
                 }
             }
+        } else {
+            FiuuUtil.callFiuuApp(
+                activity = this,
+                opType = FiuuAppendixA.SALE.value,
+                channel = FiuuAppendixB.PAYNOW.value
+            )
         }
     }
     // endregion

@@ -11,6 +11,7 @@ class MainApplication : Application() {
     companion object {
         const val TAG = "MainApplication"
 
+        var appStarted = false
         lateinit var instance: MainApplication
         lateinit var cryptography: Cryptography
         var currentVersion: String = "Version: N/A"

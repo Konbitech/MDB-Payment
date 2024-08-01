@@ -91,6 +91,7 @@ object AppSettings {
     }
 
     object Fiuu {
+        var isAPI = false
         var PaymentUrl = "https://pay.merchant.razer.com"
         var APIUrl = "https://api.merchant.razer.com"
         var MerchantID = "konbini_Dev"

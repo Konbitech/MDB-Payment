@@ -86,5 +86,16 @@ class CommonUtil {
             intent.putExtra(key, value)
             LocalBroadcastManager.getInstance(MainApplication.instance).sendBroadcast(intent)
         }
+
+        fun resetTimer(timer: Timer): Timer {
+            return try {
+                timer.purge()
+                timer.cancel()
+                Timer()
+            } catch (ex: Exception) {
+                LogUtils.logException(ex)
+                Timer()
+            }
+        }
     }
 }

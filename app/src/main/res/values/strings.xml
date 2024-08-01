@@ -16,7 +16,7 @@
 
     // Message
     <string name="message_waiting_initial_s">Waiting initial %s</string>
-    <string name="message_amount_s_s">Amount: %s \n : Selection No.: %s</string>
+    <string name="message_amount_s_s">Amount: %s\nSelection No.: %s</string>
     <string name="message_amount_s">Amount: %s</string>
     <string name="message_please_tap_card">Please tap card</string>
     <string name="message_function_is_being_upgraded">Function is being upgraded</string>

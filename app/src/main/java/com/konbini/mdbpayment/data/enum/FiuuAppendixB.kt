@@ -11,5 +11,6 @@ enum class  FiuuAppendixB(val value: String) {
     ALIPAYPLUS_OFFLINE("AlipayPlus-Offline"),
     ALIPAY_OFFLINE("Alipay-Spot"),
     ATOME_OFFLINE("Atome-Offline"),
-    UNIONPAY_OFFLINE("UnionPay-Offline")
+    UNIONPAY_OFFLINE("UnionPay-Offline"),
+    PAYNOW("PayNow")
 }
