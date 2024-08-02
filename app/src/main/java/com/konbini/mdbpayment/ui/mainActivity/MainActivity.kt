@@ -11,7 +11,7 @@ import android.os.Handler
 import android.os.Message
 import android.util.Log
 import android.view.View
-import android.widget.Toast
+//import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -21,8 +21,6 @@ import com.google.gson.JsonObject
 import com.konbini.mdbpayment.AppContainer
 import com.konbini.mdbpayment.AppSettings
 import com.konbini.mdbpayment.BroadcastKey
-import com.konbini.mdbpayment.BuildConfig
-import com.konbini.mdbpayment.MainApplication
 import com.konbini.mdbpayment.R
 import com.konbini.mdbpayment.data.enum.FiuuAppendixA
 import com.konbini.mdbpayment.data.enum.FiuuAppendixB
@@ -100,7 +98,6 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                     // val strInfo = bdl.getString("msg")
                     messageDialogFragment.dialog?.let { dialog ->
                         if (dialog.isShowing) {
-                            MainApplication.appStarted = true
                             dialog.dismiss()
                         }
                     }
@@ -114,6 +111,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                 MSG_MDB_VEND -> {
                     val itemPrice = msg.arg1 // Cent
                     val itemNumber = msg.arg2
+                    LogUtils.logInfo("itemPrice: $itemPrice - itemNumber: $itemNumber")
                     val amount = (itemPrice / 100.00) * 1.00
                     AppContainer.CurrentTransaction.totalPrice = amount
 
@@ -153,7 +151,9 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 //                    alertDialog.show()
                 }
 
-                MSG_MDB_END_SESSION -> {}
+                MSG_MDB_END_SESSION -> {
+                    reStartActivity()
+                }
                 else -> {}
             }
         }
@@ -173,8 +173,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
             LogUtils.logException(ex)
         }
 
-
-        if (!this::messageDialogFragment.isInitialized && !MainApplication.appStarted) {
+        if (!this::messageDialogFragment.isInitialized) {
             messageDialogFragment = MessageDialogFragment(
                 type = Resource.Status.LOADING.name,
                 message = String.format(
@@ -188,6 +187,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         showIdleMode()
         hidePaymentMode()
         setupRecyclerView()
+        gettingFiuuData()
 
         val scheduleReplyBeginSession = object : TimerTask() {
             override fun run() {
@@ -195,9 +195,10 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                 mProcessor?.let { _mProcessor ->
                     if (_mProcessor.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
                         _mProcessor.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
-                    } else {
-                        Toast.makeText(this@MainActivity,"mdbReader is not Enable state. ${_mProcessor.stateMachine}",Toast.LENGTH_SHORT).show()
                     }
+                    //else {
+                        //Toast.makeText(this@MainActivity,"mdbReader is not Enable state. ${_mProcessor.stateMachine}",Toast.LENGTH_SHORT).show()
+                    //}
                 }
             }
         }
@@ -206,8 +207,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 
         lifecycleScope.launch {
             mProcessor?.let { _mProcessor ->
-                delay(10000)
-                MainApplication.appStarted = true
+                delay(5000)
                 _mProcessor.setReaderEnable()
             }
 
@@ -230,12 +230,6 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         filterIntent.addAction(BroadcastKey.FIUU_QR_RESULT)
         LocalBroadcastManager.getInstance(applicationContext)
             .registerReceiver(broadcastReceiver, IntentFilter(filterIntent))
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        gettingFiuuData()
     }
 
     override fun onStop() {
@@ -373,6 +367,14 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         )
         messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
     }
+
+    private fun reStartActivity() {
+        LogUtils.logInfo("Restart Activity")
+        val intent = intent
+        intent.data = null
+        finish()
+        startActivity(intent)
+    }
     // endregion
 
     // region ================Handle Fiuu================
@@ -383,6 +385,9 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         // checking if the uri is null or not.
         if (uri != null) {
             lifecycleScope.launch {
+                messageDialogFragment.dialog?.let { _dialog ->
+                    _dialog.dismiss()
+                }
                 val parameters: MutableList<String> = uri.queryParameterNames.toMutableList()
                 LogUtils.logInfo("Uri data: ${Gson().toJson(parameters)}")
                 if (parameters.contains("errorCode") && parameters.contains("errorMsg")) {
@@ -392,6 +397,9 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                         message = message
                     )
                     messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
+
+                    delay(3000)
+                    reStartActivity()
                 } else {
                     val status = uri.getQueryParameter("status")
                     if (status == "00") {

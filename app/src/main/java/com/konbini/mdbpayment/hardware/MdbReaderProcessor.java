@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.konbini.mdbpayment.ui.mainActivity.MainActivity;
+import com.konbini.mdbpayment.utils.LogUtils;
 
 public class MdbReaderProcessor {
     private final static String TAG = "EventProcessor";
@@ -170,21 +171,25 @@ public class MdbReaderProcessor {
                             "Currency Code: " + String.format("0x%02x", mReaderInfomation.CurrencyCode) + "\n" +
                             "Manufacturer : " + new String(mReaderInfomation.ManufacturerCode) + "\n" +
                             "SerialNumber : " + new String(mReaderInfomation.SerialNumber) + "\n";
-
+                    LogUtils.INSTANCE.logInfo("EV_INITIAL_COMPLETE");
+                    LogUtils.INSTANCE.logInfo(info);
                     postMsg(MainActivity.MSG_MDB_INITIAL_COMPLETE,info);
 
                     break;
                 case EV_DEDUCT_PRICE:
+                    LogUtils.INSTANCE.logInfo("EV_DEDUCT_PRICE");
                     int itemPrice = msg.arg1;
                     int itemNumber = msg.arg2;
-                    Log.d(TAG, "Here to deducts purchase price from payment media");
+                    //Log.d(TAG, "Here to deducts purchase price from payment media");
+                    LogUtils.INSTANCE.logInfo("Here to deducts purchase price from payment media");
                     //todo: To deducts purchase price
-
+                    LogUtils.INSTANCE.logInfo("Deducts purchase price: " + itemPrice + " - itemNumber: " + itemNumber);
                     //todo: to notity ui update
                     postMsg(MainActivity.MSG_MDB_VEND,itemPrice,itemNumber);
 
                     break;
                 case EV_RESET:
+                    LogUtils.INSTANCE.logInfo("EV_RESET");
                     break;
                 default:
                     break;

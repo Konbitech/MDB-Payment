@@ -4,6 +4,8 @@ import android.hardware.mdbreader.MdbReader;
 import android.hardware.mdbreader.MdbReaderEventMonitor;
 import android.util.Log;
 
+import com.konbini.mdbpayment.utils.LogUtils;
+
 
 /**
  * mdbReader event monitor implements.
@@ -132,7 +134,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         return responseData;
     }
 
-
     private byte[] getReaderIdentificationInfo(){
         byte[] responseData = new byte[31];
         int checksum = 0;
@@ -164,6 +165,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
 //        Log.d(TAG,",getReaderIdentificationInfo: " + arrayToString(responseData));
         return responseData;
     }
+
     /**
      * set response type in the next POLL
      */
@@ -206,6 +208,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onReset() {
         Log.d(TAG,"onReset");
+        LogUtils.INSTANCE.logInfo("onReset");
         mdbReader.slaveSendAnswer(ACK);
         //todo:reset mdbReader config info
         mProcessor.execute(MdbReaderProcessor.EV_RESET);
@@ -213,7 +216,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         mState = StateMachine.Inactive;
         mPollReply = PollReply.REPLY_JUST_RESET;
     }
-
 
     /**
      * VMC is sending its configuration data to reader.
@@ -234,6 +236,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onSetupConfigData(byte[] VmcConfigData) {
         Log.d(TAG,"onSetupConfigData");
+        LogUtils.INSTANCE.logInfo("onSetupConfigData");
         /**
          * For some special VMCs.if current in the  initializing sequence,SETUP just reply ACK,
          * otherwise,reply reader config info to VMC
@@ -277,7 +280,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         }
     }
 
-
     /**
      * This event indicates that the VMC is sending the price range to the reader.
      *
@@ -291,14 +293,16 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onSetupMaxMinPrices(byte[] MaxMinPrices) {
         Log.d(TAG,"onSetupMaxMinPrices");
+        LogUtils.INSTANCE.logInfo("onSetupMaxMinPrices");
         //todo: just answer ACK to VMC
         mdbReader.slaveSendAnswer(ACK);
         mPollReply = PollReply.REPLY_ACK;
 
         mProcessor.mReaderInfomation.MaxPrice = (MaxMinPrices[2] << 8) | MaxMinPrices[3];
         mProcessor.mReaderInfomation.MinPrice = (MaxMinPrices[4] << 8) | MaxMinPrices[5];
+        LogUtils.INSTANCE.logInfo("MaxPrice: " + mProcessor.mReaderInfomation.MaxPrice);
+        LogUtils.INSTANCE.logInfo("MinPrice: " + mProcessor.mReaderInfomation.MinPrice);
     }
-
 
     /**
      * The POLL event is used by the VMC to obtain information from the payment media
@@ -489,7 +493,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         }
     }
 
-
     /**
      * This event indicates that the patron has made a selection.
      * The VMC is requesting vend approval from the payment media reader before dispensing the product.
@@ -505,6 +508,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onVendRequest(byte[] data) {
         Log.d(TAG,"onVendRequest.");
+        LogUtils.INSTANCE.logInfo("onVendRequest.");
 
         if(mState != StateMachine.SessionIdle){
             Log.d(TAG,"Session Error: mdbReader is not Session Idle state.");
@@ -520,7 +524,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         mProcessor.execute(MdbReaderProcessor.EV_DEDUCT_PRICE,itemPrice,itemNumber);
     }
 
-
     /**
      * This event indicates that the VMC request to cancel a Vend Request
      *  before {@#replyVendApproved()}/{#replyVendDenied()} has been called.
@@ -534,6 +537,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onVendCancel() {
         Log.d(TAG,"onVendCancel.");
+        LogUtils.INSTANCE.logInfo("onVendCancel.");
 
         if(mState != StateMachine.Vend){
             Log.d(TAG,"Session Error: mdbReader is not Vend state.");
@@ -543,7 +547,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         mdbReader.slaveSendAnswer(ACK);
         mPollReply = PollReply.REPLY_VEND_DENIED;
     }
-
 
     /**
      * This event indicates that the selected product has been successfully dispensed.
@@ -558,12 +561,12 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onVendSuccess(byte[] data) {
         Log.d(TAG,"onVendSuccess.");
+        LogUtils.INSTANCE.logInfo("onVendSuccess.");
         int itemNum = (data[2] << 8) | data[3];
         //todo: answer ACK and enter Session idle state
         mdbReader.slaveSendAnswer(ACK);
         mState = StateMachine.SessionIdle;
     }
-
 
     /**
      *  This event indicates that a vend has been attempted at the VMC but a problem has been detected
@@ -579,9 +582,9 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onVendFailure() {
         Log.d(TAG,"onVendFailure.");
+        LogUtils.INSTANCE.logInfo("onVendFailure.");
         //todo: answer ACK
         mdbReader.slaveSendAnswer(ACK);
-
     }
 
     /**
@@ -597,6 +600,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onSessionComplete() {
         Log.d(TAG,"onSessionComplete.");
+        LogUtils.INSTANCE.logInfo("onSessionComplete.");
 
         //todo:answer ACK
         mdbReader.slaveSendAnswer(ACK);
@@ -604,7 +608,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         mPollReply = PollReply.REPLY_END_SESSION;
 
     }
-
 
     /**
      * A cash sale (cash only or cash and cashless) has been successfully
@@ -619,8 +622,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onCashSale(byte[] data) {
         Log.d(TAG,"onCashSale");
+        LogUtils.INSTANCE.logInfo("onCashSale.");
     }
-
 
     /**
      * This event indicates that the patron has inserted an item. The VMC is requesting negative vend
@@ -634,9 +637,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
      */
     @Override
     public void onNegativeVendRequest(byte[] data) {
-
+        LogUtils.INSTANCE.logInfo("onNegativeVendRequest.");
     }
-
 
     /**
      * This informs the payment media reader that it has been disabled, i.e. it
@@ -656,6 +658,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onReaderDisable() {
         Log.d(TAG,"onReaderDisable");
+        LogUtils.INSTANCE.logInfo("onReaderDisable.");
+
         //todo: answer ACK to VMC
         mdbReader.slaveSendAnswer(ACK);
         mState = StateMachine.Disabled;
@@ -664,7 +668,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         mdbReader.setLights(LIGHT_COLOR_RED,false,0);
 
     }
-
 
     /**
      * This informs the payment media reader that is has been enabled, i.e. it
@@ -681,6 +684,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onReaderEnable() {
         Log.d(TAG,"onReaderEnable");
+        LogUtils.INSTANCE.logInfo("onReaderEnable.");
+
         //todo: answer ACK to VMC
         mdbReader.slaveSendAnswer(ACK);
         mState = StateMachine.Enabled;
@@ -694,7 +699,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
             mProcessor.execute(MdbReaderProcessor.EV_INITIAL_COMPLETE);
         }
     }
-
 
     /**
      * This command is issued to abort payment media reader activities which
@@ -719,7 +723,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         mPollReply = PollReply.REPLY_CANCELED;
     }
 
-
     /**
      * The purpose of the overall Data Entry request / response sequence is to allow the machine
      * user to enter data (i.e., a card validation number) using the selection buttons on the vending
@@ -740,7 +743,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
 
     }
 
-
     /**
      * A balance in the VMC account because coins or bills were accepted or
      *  some balance is left after a vend. With this command the VMC tries to
@@ -754,7 +756,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     public void onRevalueRequest(byte[] data) {
         Log.d(TAG,"onRevalueRequest");
     }
-
 
     /**
      * This event request the maximum amount the payment media reader eventually will accept.
@@ -821,7 +822,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
 
     }
 
-
     /**
      * This event indicates that the VMC enable which level 3 features it desires.
      * @param: option - Optional feature bits (All features are disabled after a reset.)
@@ -848,7 +848,6 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         mdbReader.slaveSendAnswer(ACK);
         mPollReply = PollReply.REPLY_ACK;
     }
-
 
     /**
      * Device manufacturer specific instruction for implementing various
