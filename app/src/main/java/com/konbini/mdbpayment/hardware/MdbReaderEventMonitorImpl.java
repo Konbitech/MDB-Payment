@@ -3,7 +3,6 @@ package com.konbini.mdbpayment.hardware;
 import android.hardware.mdbreader.MdbReader;
 import android.hardware.mdbreader.MdbReaderEventMonitor;
 import android.util.Log;
-
 import com.konbini.mdbpayment.utils.LogUtils;
 
 
@@ -130,6 +129,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         }
 
         responseData[8] = (byte)(checksum & 0xFF);
+        LogUtils.INSTANCE.logInfo("getReaderConfigData: " + arrayToString(responseData));
 
         return responseData;
     }
@@ -163,6 +163,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         responseData[index] = (byte)(checksum & 0xFF);
 
 //        Log.d(TAG,",getReaderIdentificationInfo: " + arrayToString(responseData));
+        LogUtils.INSTANCE.logInfo("getReaderIdentificationInfo: " + arrayToString(responseData));
         return responseData;
     }
 
@@ -209,6 +210,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     public void onReset() {
         Log.d(TAG,"onReset");
         LogUtils.INSTANCE.logInfo("onReset");
+
         mdbReader.slaveSendAnswer(ACK);
         //todo:reset mdbReader config info
         mProcessor.execute(MdbReaderProcessor.EV_RESET);
@@ -237,6 +239,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     public void onSetupConfigData(byte[] VmcConfigData) {
         Log.d(TAG,"onSetupConfigData");
         LogUtils.INSTANCE.logInfo("onSetupConfigData");
+        LogUtils.INSTANCE.logInfo(arrayToString(VmcConfigData));
+
         /**
          * For some special VMCs.if current in the  initializing sequence,SETUP just reply ACK,
          * otherwise,reply reader config info to VMC
@@ -294,6 +298,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     public void onSetupMaxMinPrices(byte[] MaxMinPrices) {
         Log.d(TAG,"onSetupMaxMinPrices");
         LogUtils.INSTANCE.logInfo("onSetupMaxMinPrices");
+        LogUtils.INSTANCE.logInfo(arrayToString(MaxMinPrices));
+
         //todo: just answer ACK to VMC
         mdbReader.slaveSendAnswer(ACK);
         mPollReply = PollReply.REPLY_ACK;
@@ -509,6 +515,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     public void onVendRequest(byte[] data) {
         Log.d(TAG,"onVendRequest.");
         LogUtils.INSTANCE.logInfo("onVendRequest.");
+        LogUtils.INSTANCE.logInfo(arrayToString(data));
 
         if(mState != StateMachine.SessionIdle){
             Log.d(TAG,"Session Error: mdbReader is not Session Idle state.");
@@ -562,6 +569,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     public void onVendSuccess(byte[] data) {
         Log.d(TAG,"onVendSuccess.");
         LogUtils.INSTANCE.logInfo("onVendSuccess.");
+        LogUtils.INSTANCE.logInfo(arrayToString(data));
+
         int itemNum = (data[2] << 8) | data[3];
         //todo: answer ACK and enter Session idle state
         mdbReader.slaveSendAnswer(ACK);
@@ -583,6 +592,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     public void onVendFailure() {
         Log.d(TAG,"onVendFailure.");
         LogUtils.INSTANCE.logInfo("onVendFailure.");
+
         //todo: answer ACK
         mdbReader.slaveSendAnswer(ACK);
     }
@@ -623,6 +633,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     public void onCashSale(byte[] data) {
         Log.d(TAG,"onCashSale");
         LogUtils.INSTANCE.logInfo("onCashSale.");
+        LogUtils.INSTANCE.logInfo(arrayToString(data));
     }
 
     /**
@@ -638,6 +649,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onNegativeVendRequest(byte[] data) {
         LogUtils.INSTANCE.logInfo("onNegativeVendRequest.");
+        LogUtils.INSTANCE.logInfo(arrayToString(data));
     }
 
     /**
@@ -716,6 +728,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onReaderCancel() {
         Log.d(TAG,"onReaderCancel");
+        LogUtils.INSTANCE.logInfo("onReaderCancel.");
+
         if(mState != StateMachine.Enabled){
             Log.d(TAG,"Invalid: READER CANCEL only occur in the Enable state.");
             return;
@@ -740,7 +754,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
      */
     @Override
     public void onReaderDataEntryResponse(byte[] dataEntry) {
-
+        LogUtils.INSTANCE.logInfo("onReaderDataEntryResponse.");
+        LogUtils.INSTANCE.logInfo(arrayToString(dataEntry));
     }
 
     /**
@@ -755,6 +770,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onRevalueRequest(byte[] data) {
         Log.d(TAG,"onRevalueRequest");
+        LogUtils.INSTANCE.logInfo("onRevalueRequest.");
+        LogUtils.INSTANCE.logInfo(arrayToString(data));
     }
 
     /**
@@ -769,7 +786,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
      */
     @Override
     public void onRevalueLimitRequest() {
-
+        LogUtils.INSTANCE.logInfo("onRevalueLimitRequest.");
     }
 
     /**
@@ -787,6 +804,9 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onExpansionRequestID(byte[] VMCInfo) {
         Log.d(TAG,"onExpansionRequestID");
+        LogUtils.INSTANCE.logInfo("onExpansionRequestID.");
+        LogUtils.INSTANCE.logInfo(arrayToString(VMCInfo));
+
         //todo:packet REQUEST ID
         byte[] identificationInfo = getReaderIdentificationInfo();
         int[] respcode = new int[1];
@@ -819,7 +839,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
      */
     @Override
     public void onExpansionWriteTimeDate(byte[] timeDate) {
-
+        LogUtils.INSTANCE.logInfo("onExpansionWriteTimeDate.");
+        LogUtils.INSTANCE.logInfo(arrayToString(timeDate));
     }
 
     /**
@@ -842,6 +863,9 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onExpansionEnableOption(byte[] option) {
         Log.d(TAG,"onExpansionEnableOption");
+        LogUtils.INSTANCE.logInfo("onExpansionEnableOption.");
+        LogUtils.INSTANCE.logInfo(arrayToString(option));
+
         if(option.length == 7){
             mdbReader.level3_options = option[5];
         }
@@ -862,7 +886,8 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
      */
     @Override
     public void onExpansionDiagnostics(byte[] data) {
-
+        LogUtils.INSTANCE.logInfo("onExpansionDiagnostics.");
+        LogUtils.INSTANCE.logInfo(arrayToString(data));
     }
 
     /**
@@ -870,6 +895,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
      */
     @Override
     public void onOtherReserved(byte[] data) {
-
+        LogUtils.INSTANCE.logInfo("onOtherReserved.");
+        LogUtils.INSTANCE.logInfo(arrayToString(data));
     }
 }
