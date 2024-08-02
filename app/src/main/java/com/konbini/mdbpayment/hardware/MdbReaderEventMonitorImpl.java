@@ -178,6 +178,10 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         return mState;
     }
 
+    public void setStateMachineIsVend() {
+        mState = StateMachine.Vend;
+    }
+
     public void clear(){
         mPollReply = PollReply.REPLY_ACK;
         mState = StateMachine.Inactive;
@@ -326,6 +330,9 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
         int index = 0;
 
         //Log.d(TAG,"onPoll, mPollReply: " + mPollReply);
+        if (mPollReply != PollReply.REPLY_ACK) {
+            LogUtils.INSTANCE.logInfo("onPoll, mPollReply: " + mPollReply);
+        }
         switch (mPollReply){
             /**
              * reply ACK indicates that no error states exist, and either no information
@@ -413,6 +420,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
             case REPLY_VEND_APPROVED:
                 if(mState != StateMachine.Vend){
                     Log.d(TAG,"Session Error: mdbReader is not Vend state.");
+                    LogUtils.INSTANCE.logInfo("Session Error: mdbReader is not Vend state.");
                     return;
                 }
                 int VendAmount = 100;
@@ -432,6 +440,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
             case REPLY_VEND_DENIED:
                 if(mState != StateMachine.Vend){
                     Log.d(TAG,"Session Error: mdbReader is not Vend state.");
+                    LogUtils.INSTANCE.logInfo("Session Error: mdbReader is not Vend state.");
                     return;
                 }
                 responseData[0] = RESP_ID_VEND_DENIED;

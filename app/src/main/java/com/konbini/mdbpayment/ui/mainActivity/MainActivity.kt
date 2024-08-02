@@ -152,6 +152,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                 }
 
                 MSG_MDB_END_SESSION -> {
+                    LogUtils.logInfo("MSG_MDB_END_SESSION")
                     reStartActivity()
                 }
                 else -> {}
@@ -165,14 +166,6 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        /**start cashless processor */
-        try {
-            mProcessor = MdbReaderProcessor(mHandler)
-            mProcessor!!.start()
-        } catch (ex: Exception) {
-            LogUtils.logException(ex)
-        }
-
         if (!this::messageDialogFragment.isInitialized) {
             messageDialogFragment = MessageDialogFragment(
                 type = Resource.Status.LOADING.name,
@@ -184,32 +177,28 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
             messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
         }
 
+        /**start cashless processor */
+        try {
+            mProcessor = MdbReaderProcessor(mHandler)
+            mProcessor!!.start()
+        } catch (ex: Exception) {
+            LogUtils.logException(ex)
+        }
+
         showIdleMode()
         hidePaymentMode()
         setupRecyclerView()
         gettingFiuuData()
 
-        val scheduleReplyBeginSession = object : TimerTask() {
-            override fun run() {
-                // VMC Begin
-                mProcessor?.let { _mProcessor ->
-                    if (_mProcessor.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
-                        _mProcessor.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
-                    }
-                    //else {
-                        //Toast.makeText(this@MainActivity,"mdbReader is not Enable state. ${_mProcessor.stateMachine}",Toast.LENGTH_SHORT).show()
-                    //}
-                }
-            }
-        }
-        AppContainer.GlobalVariable.timerReplyBeginSessionJob = CommonUtil.resetTimer(AppContainer.GlobalVariable.timerReplyBeginSessionJob)
-        AppContainer.GlobalVariable.timerReplyBeginSessionJob.schedule(scheduleReplyBeginSession, 0, 1000)
 
-        lifecycleScope.launch {
-            mProcessor?.let { _mProcessor ->
-                delay(5000)
-                _mProcessor.setReaderEnable()
-            }
+//        lifecycleScope.launch {
+//            mProcessor?.let { _mProcessor ->
+//                delay(2000)
+//                _mProcessor.setReaderEnable()
+//                if (_mProcessor.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
+//                    _mProcessor.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
+//                }
+//            }
 
 //            // TODO: Hardcode for test
 //            if (BuildConfig.DEBUG) {
@@ -221,7 +210,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 //                showPaymentMode()
 //                setAmountValue(number = 1, amount = 1.10)
 //            }
-        }
+//        }
     }
 
     override fun onStart() {
@@ -291,6 +280,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
     // region ================Event onClicked of Adapter================
     override fun onClickedPaymentMode(payment: String) {
         lastTouch = 0L
+        LogUtils.logInfo("Selected $payment")
 
         when (payment) {
             PaymentModeType.MASTER_CARD_VISA.value -> {
@@ -379,19 +369,20 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 
     // region ================Handle Fiuu================
     private fun gettingFiuuData() {
-        // getting the data from our
-        // intent in our uri.
-        val uri: Uri? = intent.data
-        // checking if the uri is null or not.
-        if (uri != null) {
-            lifecycleScope.launch {
+        lifecycleScope.launch {
+            // getting the data from our
+            // intent in our uri.
+            val uri: Uri? = intent.data
+            // checking if the uri is null or not.
+            if (uri != null) {
+                LogUtils.logInfo("URI: $uri")
                 messageDialogFragment.dialog?.let { _dialog ->
                     _dialog.dismiss()
                 }
                 val parameters: MutableList<String> = uri.queryParameterNames.toMutableList()
-                LogUtils.logInfo("Uri data: ${Gson().toJson(parameters)}")
                 if (parameters.contains("errorCode") && parameters.contains("errorMsg")) {
                     val message = "${uri.getQueryParameter("errorCode")}: ${uri.getQueryParameter("errorMsg")}"
+                    LogUtils.logInfo(message)
                     messageDialogFragment = MessageDialogFragment(
                         type = Resource.Status.ERROR.name,
                         message = message
@@ -407,12 +398,22 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                         handleFiuuPaymentSuccess()
                     }
                 }
+            } else {
+                mProcessor?.let { _mProcessor ->
+                    delay(2000)
+                    _mProcessor.setReaderEnable()
+                    if (_mProcessor.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
+                        _mProcessor.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
+                    }
+                }
             }
         }
     }
 
     private fun handleFiuuPaymentSuccess() {
         lifecycleScope.launch {
+            LogUtils.logInfo("Handle payment success")
+            LogUtils.logInfo("Show dialog payment success")
             messageDialogFragment = MessageDialogFragment(
                 type = Resource.Status.SUCCESS.name,
                 message = "Payment Success"
@@ -422,12 +423,17 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
             messageDialogFragment.setIcon(type = Resource.Status.LOADING.name)
             messageDialogFragment.setMessage(message = "REPLY VEND APPROVED")
             // REPLY VEND APPROVED
+            LogUtils.logInfo("Set poll REPLY_VEND_APPROVED")
+            mProcessor!!.setStateMachineIsVend()
             mProcessor!!.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_VEND_APPROVED)
             delay(1000)
             messageDialogFragment.dialog!!.dismiss()
 
             showIdleMode()
             hidePaymentMode()
+
+            delay(3000)
+            reStartActivity()
         }
     }
 

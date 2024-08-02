@@ -136,7 +136,6 @@ public class MdbReaderProcessor {
 
     public void setPollReply(MdbReaderEventMonitorImpl.PollReply pollReply){
         if(isStart == false){
-
             return;
         }
         mMdbReaderEventMonitor.setPollReply(pollReply);
@@ -144,6 +143,10 @@ public class MdbReaderProcessor {
 
     public MdbReaderEventMonitorImpl.StateMachine getStateMachine(){
         return mMdbReaderEventMonitor.getStateMachine();
+    }
+
+    public void setStateMachineIsVend(){
+        mMdbReaderEventMonitor.setStateMachineIsVend();
     }
 
     public void setReaderEnable() {
