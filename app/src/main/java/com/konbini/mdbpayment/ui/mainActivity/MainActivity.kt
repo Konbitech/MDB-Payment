@@ -179,6 +179,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 
         /**start cashless processor */
         try {
+            mProcessor = null
             mProcessor = MdbReaderProcessor(mHandler)
             mProcessor!!.start()
         } catch (ex: Exception) {
@@ -390,6 +391,9 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                     messageDialogFragment.show(supportFragmentManager, MessageDialogFragment.TAG)
 
                     delay(3000)
+                    messageDialogFragment.dialog?.let { _dialog ->
+                        _dialog.dismiss()
+                    }
                     reStartActivity()
                 } else {
                     val status = uri.getQueryParameter("status")
@@ -399,12 +403,16 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                     }
                 }
             } else {
-                mProcessor?.let { _mProcessor ->
-                    delay(2000)
-                    _mProcessor.setReaderEnable()
-                    if (_mProcessor.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
-                        _mProcessor.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
-                    }
+//                mProcessor?.let { _mProcessor ->
+//                    delay(2000)
+//                    _mProcessor.setReaderEnable()
+//                    if (_mProcessor.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
+//                        _mProcessor.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
+//                    }
+//                }
+                delay(2000)
+                messageDialogFragment.dialog?.let { _dialog ->
+                    _dialog.dismiss()
                 }
             }
         }

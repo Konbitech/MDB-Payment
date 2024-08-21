@@ -523,6 +523,7 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onVendRequest(byte[] data) {
         Log.d(TAG,"onVendRequest.");
+        Log.d(TAG,mState.toString());
         LogUtils.INSTANCE.logInfo("onVendRequest.");
         LogUtils.INSTANCE.logInfo(arrayToString(data));
 
@@ -553,7 +554,11 @@ public class MdbReaderEventMonitorImpl implements MdbReaderEventMonitor {
     @Override
     public void onVendCancel() {
         Log.d(TAG,"onVendCancel.");
+        Log.d(TAG,mState.toString());
         LogUtils.INSTANCE.logInfo("onVendCancel.");
+
+        // TODO: TrungPQ set state is SessionIdle
+        mState = StateMachine.SessionIdle;
 
         if(mState != StateMachine.Vend){
             Log.d(TAG,"Session Error: mdbReader is not Vend state.");
