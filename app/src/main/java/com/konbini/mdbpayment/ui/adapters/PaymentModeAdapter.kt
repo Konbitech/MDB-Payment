@@ -107,7 +107,7 @@ class PaymentModeViewHolder(
                         setIcon(imgFile)
                     }
                 } else {
-                    setIcon(R.drawable.ic_grabpay)
+                    setIcon(R.drawable.ic_grab_pay)
                 }
                 itemBinding.paymentName.text = MainApplication.instance.resources.getString(R.string.title_grab_pay)//"GrabPay"
             }

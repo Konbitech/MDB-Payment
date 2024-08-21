@@ -46,7 +46,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
+class MainActivity : BaseActivity() {//, PaymentModeAdapter.ItemListener {
 
     companion object {
         const val TAG = "MainActivity"
@@ -188,30 +188,8 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
 
         showIdleMode()
         hidePaymentMode()
-        setupRecyclerView()
         gettingFiuuData()
-
-
-//        lifecycleScope.launch {
-//            mProcessor?.let { _mProcessor ->
-//                delay(2000)
-//                _mProcessor.setReaderEnable()
-//                if (_mProcessor.stateMachine == MdbReaderEventMonitorImpl.StateMachine.Enabled) {
-//                    _mProcessor.setPollReply(MdbReaderEventMonitorImpl.PollReply.REPLY_BEGIN_SESSION)
-//                }
-//            }
-
-//            // TODO: Hardcode for test
-//            if (BuildConfig.DEBUG) {
-//                delay(2000)
-//                messageDialogFragment.dismiss()
-//                AppContainer.CurrentTransaction.totalPrice = 1.10
-//
-//                hideIdleMode()
-//                showPaymentMode()
-//                setAmountValue(number = 1, amount = 1.10)
-//            }
-//        }
+        setupActions()
     }
 
     override fun onStart() {
@@ -227,88 +205,70 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
         LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(broadcastReceiver)
     }
 
-    /**
-     * Setup recycler view
-     *
-     */
-    private fun setupRecyclerView() {
-        LogUtils.logInfo("Setup RecyclerView")
-        initRecyclerViewPayments()
+    private fun View.setSafeOnClickListener(onSafeClick: (View) -> Unit) {
+        val safeClickListener = SafeClickListener {
+            onSafeClick(it)
+        }
+        setOnClickListener(safeClickListener)
     }
 
-    /**
-     * Init recycler view payments
-     *
-     */
-    private fun initRecyclerViewPayments() {
-        listPaymentType.clear()
-        if (AppSettings.PaymentMode.MasterCardVisa) {
-            listPaymentType.add(PaymentModeType.MASTER_CARD_VISA.value)
-        }
-        if (AppSettings.PaymentMode.EzLink) {
-            listPaymentType.add(PaymentModeType.EZ_LINK.value)
-        }
-        if (AppSettings.PaymentMode.PayNow) {
-            listPaymentType.add(PaymentModeType.PAYNOW.value)
-        }
-        if (AppSettings.PaymentMode.AliPay) {
-            listPaymentType.add(PaymentModeType.ALIPAY.value)
-        }
-        if (AppSettings.PaymentMode.GrabPay) {
-            listPaymentType.add(PaymentModeType.GRABPAY.value)
-        }
-        if (AppSettings.PaymentMode.WeChat) {
-            listPaymentType.add(PaymentModeType.WECHAT.value)
-        }
-        if (AppSettings.PaymentMode.KonbiniWallet) {
-            listPaymentType.add(PaymentModeType.KONBI_WALLET.value)
+    private fun setupActions() {
+        binding.layoutPaymentMode.masterVisaMode.setSafeOnClickListener {
+            handleFiuuVisaMasterCard()
         }
 
-        val coefficient = sqrt(listPaymentType.size.toDouble())
-        val spanRow = coefficient.roundToInt()
-        val spanCount =
-            if (spanRow.toDouble().pow(2) > listPaymentType.size) spanRow else spanRow + 1
-        val height = ((resources.displayMetrics.heightPixels - (resources.displayMetrics.heightPixels * 0.20)) / spanRow) - 5
+        binding.layoutPaymentMode.ezLinkMode.setSafeOnClickListener {
+            showWarningBeingUpgraded()
+        }
 
-        paymentModeAdapter = PaymentModeAdapter(this, height.toInt())
-        val manager =
-            GridLayoutManager(this, spanCount, GridLayoutManager.VERTICAL, false)
-        binding.recyclerViewPayments.layoutManager = manager
-        binding.recyclerViewPayments.adapter = paymentModeAdapter
-        paymentModeAdapter.setItems(items = ArrayList(listPaymentType))
+        binding.layoutPaymentMode.payNowMode.setSafeOnClickListener {
+            handleFiuuPayNow()
+        }
+
+        binding.layoutPaymentMode.alipayMode.setSafeOnClickListener {
+            handleFiuuAliPay()
+        }
+
+        binding.layoutPaymentMode.grabPayMode.setSafeOnClickListener {
+            handleFiuuGrabPay()
+        }
+
+        binding.layoutPaymentMode.weChatMode.setSafeOnClickListener {
+            handleFiuuWechat()
+        }
     }
 
-    // region ================Event onClicked of Adapter================
-    override fun onClickedPaymentMode(payment: String) {
-        lastTouch = 0L
-        LogUtils.logInfo("Selected $payment")
-
-        when (payment) {
-            PaymentModeType.MASTER_CARD_VISA.value -> {
-                handleFiuuVisaMasterCard()
-            }
-            PaymentModeType.EZ_LINK.value -> {
-                showWarningBeingUpgraded()
-            }
-            PaymentModeType.PAYNOW.value -> {
-                handleFiuuPayNow()
-            }
-            PaymentModeType.ALIPAY.value -> {
-                showWarningBeingUpgraded()
-            }
-            PaymentModeType.GRABPAY.value -> {
-                showWarningBeingUpgraded()
-            }
-            PaymentModeType.WECHAT.value -> {
-                showWarningBeingUpgraded()
-            }
-            PaymentModeType.KONBI_WALLET.value -> {
-                showWarningBeingUpgraded()
-            }
-        }
-
-    }
-    // endregion
+//    // region ================Event onClicked of Adapter================
+//    override fun onClickedPaymentMode(payment: String) {
+//        lastTouch = 0L
+//        LogUtils.logInfo("Selected $payment")
+//
+//        when (payment) {
+//            PaymentModeType.MASTER_CARD_VISA.value -> {
+//                handleFiuuVisaMasterCard()
+//            }
+//            PaymentModeType.EZ_LINK.value -> {
+//                showWarningBeingUpgraded()
+//            }
+//            PaymentModeType.PAYNOW.value -> {
+//                handleFiuuPayNow()
+//            }
+//            PaymentModeType.ALIPAY.value -> {
+//                showWarningBeingUpgraded()
+//            }
+//            PaymentModeType.GRABPAY.value -> {
+//                showWarningBeingUpgraded()
+//            }
+//            PaymentModeType.WECHAT.value -> {
+//                showWarningBeingUpgraded()
+//            }
+//            PaymentModeType.KONBI_WALLET.value -> {
+//                showWarningBeingUpgraded()
+//            }
+//        }
+//
+//    }
+//    // endregion
 
     // region ================Handle UI================
     private fun setAmountValue(number: Int, amount: Double) {
@@ -398,7 +358,7 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                 } else {
                     val status = uri.getQueryParameter("status")
                     if (status == "00") {
-                        val orderId = uri.getQueryParameter("orderid").toString()
+//                        val orderId = uri.getQueryParameter("orderid").toString()
                         handleFiuuPaymentSuccess()
                     }
                 }
@@ -520,6 +480,30 @@ class MainActivity : BaseActivity(), PaymentModeAdapter.ItemListener {
                 channel = FiuuAppendixB.PAYNOW.value
             )
         }
+    }
+
+    private fun handleFiuuAliPay() {
+        FiuuUtil.callFiuuApp(
+            activity = this,
+            opType = FiuuAppendixA.SALE.value,
+            channel = FiuuAppendixB.ALIPAY_OFFLINE.value
+        )
+    }
+
+    private fun handleFiuuGrabPay() {
+        FiuuUtil.callFiuuApp(
+            activity = this,
+            opType = FiuuAppendixA.SALE.value,
+            channel = FiuuAppendixB.GRABPAY_OFFLINE.value
+        )
+    }
+
+    private fun handleFiuuWechat() {
+        FiuuUtil.callFiuuApp(
+            activity = this,
+            opType = FiuuAppendixA.SALE.value,
+            channel = FiuuAppendixB.WECHATPAYMY_OFFLINE.value
+        )
     }
     // endregion
 }
