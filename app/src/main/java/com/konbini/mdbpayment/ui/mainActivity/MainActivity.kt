@@ -276,10 +276,14 @@ class MainActivity : BaseActivity() {//, PaymentModeAdapter.ItemListener {
 
     // region ================Handle UI================
     private fun setAmountValue(number: Int, amount: Double) {
+//        binding.messageAmount.text = String.format(
+//            getString(R.string.message_amount_s_s),
+//            CommonUtil.formatCurrency(value = amount),
+//            String.format("%03d", number)
+//        )
         binding.messageAmount.text = String.format(
-            getString(R.string.message_amount_s_s),
-            CommonUtil.formatCurrency(value = amount),
-            String.format("%03d", number)
+            getString(R.string.message_amount_s),
+            CommonUtil.formatCurrency(value = amount)
         )
     }
 

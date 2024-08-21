@@ -41,11 +41,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/master_visa_line_horizontal_70"
+            android:id="@+id/master_visa_line_horizontal_65"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.70" />
+            app:layout_constraintGuide_percent="0.65" />
 
         <ImageView
             android:layout_width="0dp"
@@ -53,7 +53,7 @@
             android:padding="2dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_master_visa"
-            app:layout_constraintBottom_toBottomOf="@id/master_visa_line_horizontal_70"
+            app:layout_constraintBottom_toBottomOf="@id/master_visa_line_horizontal_65"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -69,7 +69,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/master_visa_line_horizontal_70" />
+            app:layout_constraintTop_toTopOf="@id/master_visa_line_horizontal_65" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--EzLink-->
@@ -85,11 +85,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/ezLink_line_horizontal_70"
+            android:id="@+id/ezLink_line_horizontal_65"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.70" />
+            app:layout_constraintGuide_percent="0.65" />
 
         <ImageView
             android:layout_width="0dp"
@@ -97,7 +97,7 @@
             android:padding="2dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_ezlink"
-            app:layout_constraintBottom_toBottomOf="@id/ezLink_line_horizontal_70"
+            app:layout_constraintBottom_toBottomOf="@id/ezLink_line_horizontal_65"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -113,7 +113,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/ezLink_line_horizontal_70" />
+            app:layout_constraintTop_toTopOf="@id/ezLink_line_horizontal_65" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--PayNow-->
@@ -129,11 +129,11 @@
         app:layout_constraintTop_toTopOf="@id/line_horizontal_33">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/pay_now_line_horizontal_70"
+            android:id="@+id/pay_now_line_horizontal_65"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.70" />
+            app:layout_constraintGuide_percent="0.65" />
 
         <ImageView
             android:layout_width="0dp"
@@ -141,7 +141,7 @@
             android:padding="2dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_pay_now"
-            app:layout_constraintBottom_toBottomOf="@id/pay_now_line_horizontal_70"
+            app:layout_constraintBottom_toBottomOf="@id/pay_now_line_horizontal_65"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -157,7 +157,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/pay_now_line_horizontal_70" />
+            app:layout_constraintTop_toTopOf="@id/pay_now_line_horizontal_65" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--AliPay-->
@@ -173,11 +173,11 @@
         app:layout_constraintTop_toTopOf="@id/line_horizontal_33">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/alipay_line_horizontal_70"
+            android:id="@+id/alipay_line_horizontal_65"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.70" />
+            app:layout_constraintGuide_percent="0.65" />
 
         <ImageView
             android:layout_width="0dp"
@@ -185,7 +185,7 @@
             android:padding="2dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_alipay"
-            app:layout_constraintBottom_toBottomOf="@id/alipay_line_horizontal_70"
+            app:layout_constraintBottom_toBottomOf="@id/alipay_line_horizontal_65"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -201,7 +201,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/alipay_line_horizontal_70" />
+            app:layout_constraintTop_toTopOf="@id/alipay_line_horizontal_65" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--GrabPay-->
@@ -217,11 +217,11 @@
         app:layout_constraintTop_toTopOf="@id/line_horizontal_66">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/grab_pay_line_horizontal_70"
+            android:id="@+id/grab_pay_line_horizontal_65"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.70" />
+            app:layout_constraintGuide_percent="0.65" />
 
         <ImageView
             android:layout_width="0dp"
@@ -229,7 +229,7 @@
             android:padding="2dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_grab_pay"
-            app:layout_constraintBottom_toBottomOf="@id/grab_pay_line_horizontal_70"
+            app:layout_constraintBottom_toBottomOf="@id/grab_pay_line_horizontal_65"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -245,7 +245,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/grab_pay_line_horizontal_70" />
+            app:layout_constraintTop_toTopOf="@id/grab_pay_line_horizontal_65" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--WeChat-->
@@ -261,11 +261,11 @@
         app:layout_constraintTop_toTopOf="@id/line_horizontal_66">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/wechat_line_horizontal_70"
+            android:id="@+id/wechat_line_horizontal_65"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.70" />
+            app:layout_constraintGuide_percent="0.65" />
 
         <ImageView
             android:layout_width="0dp"
@@ -273,7 +273,7 @@
             android:padding="2dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_wechat"
-            app:layout_constraintBottom_toBottomOf="@id/wechat_line_horizontal_70"
+            app:layout_constraintBottom_toBottomOf="@id/wechat_line_horizontal_65"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -289,7 +289,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/wechat_line_horizontal_70" />
+            app:layout_constraintTop_toTopOf="@id/wechat_line_horizontal_65" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
