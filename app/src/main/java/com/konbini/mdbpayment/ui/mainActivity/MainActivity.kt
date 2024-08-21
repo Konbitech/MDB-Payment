@@ -236,6 +236,10 @@ class MainActivity : BaseActivity() {//, PaymentModeAdapter.ItemListener {
         binding.layoutPaymentMode.weChatMode.setSafeOnClickListener {
             handleFiuuWechat()
         }
+
+        binding.buttonCancel.setSafeOnClickListener {
+            reStartActivity()
+        }
     }
 
 //    // region ================Event onClicked of Adapter================

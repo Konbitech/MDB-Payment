@@ -32,11 +32,32 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/payment_mode_line_horizontal_20"
+            android:id="@+id/payment_mode_line_horizontal_10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.20" />
+            app:layout_constraintGuide_percent="0.10" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/payment_mode_line_horizontal_90"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.90" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/payment_mode_line_vertical_25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/payment_mode_line_vertical_75"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
 
         <TextView
             android:id="@+id/messageAmount"
@@ -47,7 +68,7 @@
             android:text="@string/message_amount_s"
             android:textColor="@color/grey"
             android:textSize="34sp"
-            app:layout_constraintBottom_toBottomOf="@id/payment_mode_line_horizontal_20"
+            app:layout_constraintBottom_toBottomOf="@id/payment_mode_line_horizontal_10"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -57,10 +78,25 @@
             layout="@layout/view_payment_mode"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/payment_mode_line_horizontal_90"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/payment_mode_line_horizontal_20" />
+            app:layout_constraintTop_toTopOf="@id/payment_mode_line_horizontal_10" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonCancel"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/title_cancel"
+            android:background="@drawable/custom_button_grey_10"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_bold_italic"
+            android:textSize="25sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/payment_mode_line_vertical_25"
+            app:layout_constraintRight_toRightOf="@id/payment_mode_line_vertical_75"
+            app:layout_constraintTop_toTopOf="@id/payment_mode_line_horizontal_90" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
